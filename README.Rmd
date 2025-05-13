@@ -1,0 +1,125 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# asdnprivatefunctions
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+A collection of private helper functions for spectral model evaluation and diagnostics.
+
+## Installation
+
+You can install the development version of asdnprivatefunctions like so:
+
+```{r instal}
+# Not yet on CRAN
+# To install from GitHub (after upload):
+# remotes::install_github("yourusername/asdnprivatefunctions")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+# Load required packages
+library(mdatools)
+library(asdnprivatefunctions)
+
+# Generate example data
+set.seed(123)
+X <- matrix(rnorm(100 * 10), nrow = 100)  # 100 samples, 10 predictors
+y <- X %*% rnorm(10) + rnorm(100, sd = 0.5)  # Response with some noise
+
+# Fit a PLS model with cross-validation
+pls_model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
+
+# Evaluate all components
+evaluation_table <- ASDN_evaluate_all_components(pls_model)
+print(evaluation_table)
+
+# Perform final model assessment
+ASDN_final_model_assessment(pls_model)
+
+```
+
+---
+
+### test
+
+Make sure your package has a `tests/testthat/` directory:
+
+```{r test}
+# Load required package
+library(testthat)
+library(mdatools)
+library(asdnprivatefunctions)
+
+test_that("ASDN_evaluate_all_components returns a data.frame", {
+  # Generate dummy data
+  set.seed(123)
+  X <- matrix(rnorm(100 * 10), nrow = 100)
+  y <- rnorm(100)
+
+  # Create a valid pls model with 5 components and 5-fold CV
+  pls_model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
+
+  # Run your function
+  result <- ASDN_evaluate_all_components(pls_model)
+
+  # Test the output is a data.frame
+  expect_s3_class(result, "data.frame")
+})
+
+# Load required package
+library(testthat)
+library(mdatools)
+library(asdnprivatefunctions)
+
+test_that("ASDN_evaluate_all_components returns a data.frame", {
+  # Generate dummy data
+  set.seed(123)
+  X <- matrix(rnorm(100 * 10), nrow = 100)
+  y <- rnorm(100)
+
+  # Create a valid pls model with 5 components and 5-fold CV
+  pls_model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
+
+  # Run your function
+  result <- ASDN_evaluate_all_components(pls_model)
+
+  # Test the output is a data.frame
+  expect_s3_class(result, "data.frame")
+})
+
+test_that("ASDN_final_model_assessment returns expected structure or NULL", {
+  set.seed(123)
+  X <- matrix(rnorm(100 * 10), nrow = 100)
+  y <- rnorm(100)
+  pls_model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
+
+  result <- ASDN_final_model_assessment(pls_model)
+
+  # Either a list with Conclusion, or NULL if model failed
+  if (!is.null(result)) {
+    expect_type(result, "list")
+    expect_true("Conclusion" %in% names(result))
+  } else {
+    message("⚠️ Function returned NULL — likely due to poor model quality.")
+    succeed()
+  }
+})
+```

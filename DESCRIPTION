@@ -1,0 +1,15 @@
+Package: asdnprivatefunctions
+Title: Internal Tools for PLS Model Validation
+Version: 0.1.0
+Author: Your Name
+Maintainer: Your Name <you@example.com>
+Description: Internal tools for assessing calibration, prediction, and generalization performance of PLS models created using the mdatools package.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    mdatools
+RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
