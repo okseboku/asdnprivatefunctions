@@ -1,12 +1,33 @@
-#' Evaluate all components of a PLS model
+#' Evaluate PLS Model Across All Components
 #'
-#' This function extracts validation metrics from all components of a fitted PLS model,
-#' and flags each component as 'Good', 'Acceptable', 'Overfit', or 'Weak'.
+#' Evaluates calibration and cross-validation performance metrics
+#' (R², RMSE, slope, bias, RPD) for each component in a PLS model.
+#' Flags components as "Good", "Acceptable", "Overfit", "Weak", or "Missing"
+#' based on heuristics. Optionally returns metrics only for a specific component.
 #'
-#' @param pls_model A fitted PLS model object from mdatools
-#' @return A data.frame with metrics and performance flags
+#' @param pls_model A PLS model object from the `mdatools` package.
+#' @param ncomp Optional integer. If provided, only metrics for that specific
+#'        component number are returned. Must be between 1 and `pls_model$ncomp`.
+#'
+#' @return A data frame with evaluation metrics and quality flags for each component.
+#'         If `ncomp` is specified, a single-row data frame is returned.
+#'
+#' @examples
+#' library(mdatools)
+#' X <- matrix(rnorm(100 * 10), nrow = 100)
+#' y <- X %*% rnorm(10) + rnorm(100, sd = 0.3)
+#' model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
+#'
+#' # Full evaluation
+#' ASDN_evaluate_all_components(model)
+#'
+#' # Only component 3
+#' ASDN_evaluate_all_components(model, ncomp = 3)
+#'
 #' @export
-ASDN_evaluate_all_components <- function(pls_model) {
+
+
+ASDN_evaluate_all_components <- function(pls_model, ncomp = NULL) {
   cal <- pls_model$res$cal
   cv  <- pls_model$res$cv
   max_comps <- pls_model$ncomp
@@ -49,13 +70,23 @@ ASDN_evaluate_all_components <- function(pls_model) {
     }
   }
 
+  # Mark selected component if known
   nsel <- pls_model$ncomp.selected
-  if (!is.null(nsel)) {
+  if (!is.null(nsel) && nsel <= max_comps) {
     eval_table$Flag[nsel] <- paste(eval_table$Flag[nsel], "(selected)")
+  }
+
+  # If user wants only one component's evaluation, return just that row
+  if (!is.null(ncomp)) {
+    if (ncomp < 1 || ncomp > max_comps) {
+      stop(paste("ncomp must be between 1 and", max_comps))
+    }
+    return(eval_table[eval_table$ncomp == ncomp, , drop = FALSE])
   }
 
   return(eval_table)
 }
+
 
 #' Print a summary assessment for the selected PLS model component
 #'
@@ -114,3 +145,4 @@ ASDN_final_model_assessment <- function(pls_model) {
     }
   }
 }
+

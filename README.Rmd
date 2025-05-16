@@ -48,8 +48,10 @@ y <- X %*% rnorm(10) + rnorm(100, sd = 0.5)  # Response with some noise
 pls_model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
 
 # Evaluate all components
-evaluation_table <- ASDN_evaluate_all_components(pls_model)
-print(evaluation_table)
+ASDN_evaluate_all_components(pls_model)
+
+# Only evaluation for component 3
+ASDN_evaluate_all_components(pls_model, ncomp = 3)
 
 # Perform final model assessment
 ASDN_final_model_assessment(pls_model)

@@ -2,17 +2,36 @@
 % Please edit documentation in R/pls_validation.R
 \name{ASDN_evaluate_all_components}
 \alias{ASDN_evaluate_all_components}
-\title{Evaluate all components of a PLS model}
+\title{Evaluate PLS Model Across All Components}
 \usage{
-ASDN_evaluate_all_components(pls_model)
+ASDN_evaluate_all_components(pls_model, ncomp = NULL)
 }
 \arguments{
-\item{pls_model}{A fitted PLS model object from mdatools}
+\item{pls_model}{A PLS model object from the `mdatools` package.}
+
+\item{ncomp}{Optional integer. If provided, only metrics for that specific
+component number are returned. Must be between 1 and `pls_model$ncomp`.}
 }
 \value{
-A data.frame with metrics and performance flags
+A data frame with evaluation metrics and quality flags for each component.
+        If `ncomp` is specified, a single-row data frame is returned.
 }
 \description{
-This function extracts validation metrics from all components of a fitted PLS model,
-and flags each component as 'Good', 'Acceptable', 'Overfit', or 'Weak'.
+Evaluates calibration and cross-validation performance metrics
+(R², RMSE, slope, bias, RPD) for each component in a PLS model.
+Flags components as "Good", "Acceptable", "Overfit", "Weak", or "Missing"
+based on heuristics. Optionally returns metrics only for a specific component.
+}
+\examples{
+library(mdatools)
+X <- matrix(rnorm(100 * 10), nrow = 100)
+y <- X \%*\% rnorm(10) + rnorm(100, sd = 0.3)
+model <- pls(X, y, ncomp = 5, cv = 5, scale = TRUE)
+
+# Full evaluation
+ASDN_evaluate_all_components(model)
+
+# Only component 3
+ASDN_evaluate_all_components(model, ncomp = 3)
+
 }
